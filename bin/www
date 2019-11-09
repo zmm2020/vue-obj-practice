@@ -1,0 +1,127 @@
+#!/usr/bin/env node
+
+/**
+ * 开发localhost:3000
+ * 上线 http://域名.com:80
+ * 上线 https://域名.com:443
+ */
+// 导入app模块
+var app = require('../app');
+var debug = require('debug')('nodeobj1907:server');
+// 导入config下的server模块，一边后来更加容易的获取到端口信息
+var config = require('../config/server');
+// 手动创建合同谈判，端口，服务，定义变量
+var http,port,server;
+
+
+// 判断是否是本地开发，开启本地服务器
+// 判断是哪个端口开启
+if(config.local.open){
+  // 引入模块
+  http = require('http');
+  // 导入接口
+  port=config.local.port;
+  // 创建服务器，将任务交给app服务器来处理
+  server = http.createServer(app);
+}else if(config.http.open){
+  http = require('http');
+  port=config.http.port;
+  server = http.createServer(app);
+}else if(config.https.open){
+  /* http = require('https');
+  port=config.https.port;
+  var options = {
+    key: fs.readFileSync('./bin/1826016_uncle9.top.key'),
+    cert: fs.readFileSync('./bin/1826016_uncle9.top.pem'),
+  };
+  server = http.createServer(options,app); */
+}
+
+/**
+ * Get port from environment and store in Express.
+ */
+
+// var port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+
+// var server = http.createServer(app);
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
+
+const SOCKETIO = require('socket.io');//创建socket实例
+const io = SOCKETIO.listen(server);//监听http实例，未来3000端口下的http请求，会触发socket
+
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  var bind = typeof port === 'string'
+    ? 'Pipe ' + port
+    : 'Port ' + port;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+  debug('Listening on ' + bind);
+}
+
+
+// 服务端的io用于发布
+module.exports = io;

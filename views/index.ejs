@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/admin/css/a.css' />
+  </head>
+  <body>
+    <h1><%= title %></h1>
+    <p>Welcome to <%= title %></p>
+
+    <input type="text">
+    <input type="text">
+    <input type="text">
+    <input type="text">
+    <input type="text">
+    <button type = "button" id="add">提交</button>
+  </body>
+  <script src="/admin/js/ajax.js"></script>
+  <script>
+    // 给按钮添加点击事件
+    // 对数据进行操作，操作完成之后，订阅方会知道看见操作完成的结果
+    add.onclick = function(){
+      ajax({
+        url:"/admin/banner",
+        type:"post",
+        success:function(res){
+          console.log("后端返回的数据",res);
+        }
+      });
+    }
+  </script>
+</html>
